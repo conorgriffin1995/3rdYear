@@ -1,0 +1,416 @@
+[[releng-devenv]]
+= Release Engineering DevEnv
+:_basedir: ../../
+:_imagesdir: _images/
+:toc: right
+
+This guide describes additional setup required for the development environment of the Release Engineering team.
+
+
+[[releng-devenv_rationale]]
+== Rationale
+
+We use Jenkins as our continuous integration environment.
+This uses the link:https://wiki.jenkins-ci.org/display/JENKINS/Job+DSL+Plugin[Job DSL plugin] to create new pipelines based on a set of templates; these templates call Powershell scripts that are deployed via the `Z:` drive (`\\vssdmrelease\release`)
+
+There is a close relationship between the build pipelines and these powershell scripts, and any error in them would be serious: it could potentially break all builds for all teams across all branches.
+
+It's therefore important that changes and enhancements to these build pipelines are developed locally, and then deployed.
+This requires:
+
+* installing Jenkins 2.0 instance locally
+* tweaking the Powershell profile to pick up modules from local drive (rather than the `Z:` drive)
+
+
+
+[[releng-devenv_install-jenkins]]
+== Install Jenkins
+
+Jenkins can be installed using xref:index.adoc#software-prerequisites_chocolatey[Chocolatey].
+
+[source,powershell]
+----
+choco install jenkins
+----
+
+This should install Jenkins as a Windows Service, listening on port 8080.
+At the time of writing, this was Jenkins v2.32.1.
+
+By default this Jenkins will run as 32bit but we need 64bit for it to run 64bit powershell on our local machine.
+To change this open up `C:\Program Files (x86)\Jenkins\jenkins.xml` file and change:
+
+[source]
+----
+<executable>%BASE%\jre\bin\java</executable>
+----
+
+to
+
+[source]
+----
+<executable>java</executable>
+----
+
+This will tell Jenkins to use the 64bit JRE you have in the local machines path instead of its default 32bit version.
+
+Restart Jenkins as a Windows Service
+
+
+[[releng-devenv_install-jenkins_unlock-jenkins]]
+=== Unlock Jenkins
+
+Access link:http://localhost:8080[localhost:8080], and you should see this message:
+
+[source]
+----
+Unlock Jenkins
+
+To ensure Jenkins is securely set up by the administrator, a password has been written to the log (https://jenkins.io/redirect/find-jenkins-logs[not sure where to find it?]) and this file on the server:
+
+``C:\Program Files (x86)\Jenkins\secrets\initialAdminPassword``
+
+Please copy the password from either location and paste it below.
+Administrator password
+----
+
+Open up that file and copy in the password as requested.
+
+On the next page:
+
+image::_images/Jenkins/select-plugins.png[link="_images/Jenkins/select-plugins.png"]
+
+choose "Install suggested plugins"
+
+On the next page:
+
+image::_images/Jenkins/first-admin-user.png[link="_images/Jenkins/first-admin-user.png"]
+
+You can either customize the admin user account (and click "save and finish"), or just accept the default (click "continue as admin").
+
+
+[TIP]
+====
+You can change the password later using `Manage Jenkins > Manage Users`.
+====
+
+
+[[releng-devenv_customise_plugins]]
+== Customise Plugins
+
+We next need to install some additional plugins.
+
+Using `Manage Jenkins > Manage Plugins > Available`, install the following (these are the additional plugins deployed to `vssdmtest0049`, our CI server):
+
+* http://wiki.jenkins-ci.org/display/JENKINS/Active+Directory+Plugin[  
+Active Directory plugin]
+
+* http://wiki.jenkins-ci.org/display/JENKINS/AnsiColor+Plugin[AnsiColor]
+
+* https://wiki.jenkins-ci.org/display/JENKINS/Authorize+Project+plugin[Authorize Project plugin]
+
+* https://wiki.jenkins-ci.org/display/JENKINS/Build+Token+Root+Plugin[Build Authorization Token Root Plugin]
+
+* https://wiki.jenkins-ci.org/display/JENKINS/Credentials+Binding+Plugin[Credentials Binding Plugin]
+
+* http://wiki.jenkins-ci.org/display/JENKINS/Build+Monitor+Plugin[Build Monitor View]
+
+* https://wiki.jenkins-ci.org/display/JENKINS/Build+Pipeline+Plugin[Build Pipeline Plugin]
+
+* https://wiki.jenkins-ci.org/display/JENKINS/Change+Assembly+Version[Change Assembly Version]
+
+* https://wiki.jenkins-ci.org/display/JENKINS/Conditional+BuildStep+Plugin[Conditional BuildStep]
+
+* http://wiki.jenkins-ci.org/display/JENKINS/Copy+Artifact+Plugin[Copy Artifact Plugin]
+
+* http://wiki.jenkins-ci.org/display/JENKINS/Dashboard+View[Dashboard View]
+
+* http://wiki.jenkins-ci.org/display/JENKINS/Discard+Old+Build+plugin[Discard Old Build plugin]
+
+* https://wiki.jenkins-ci.org/display/JENKINS/Emma+Plugin[Emma plugin]
+
+* https://wiki.jenkins-ci.org/display/JENKINS/Job+DSL+Plugin[Job DSL]
+
+* http://wiki.jenkins-ci.org/display/JENKINS/Join+Plugin[Join plugin]
+ 
+* http://wiki.jenkins-ci.org/display/JENKINS/jQuery+Plugin[jQuery plugin] 
+
+* http://wiki.jenkins-ci.org/display/JENKINS/Maven+Project+Plugin[Maven Integration plugin]
+
+* http://wiki.jenkins-ci.org/display/JENKINS/MSBuild+Plugin[MSBuild Plugin]
+
+* http://wiki.jenkins-ci.org/display/JENKINS/MSTest+Plugin[MSTest plugin]
+
+* http://wiki.jenkins-ci.org/display/JENKINS/NUnit+Plugin[NUnit plugin]
+
+* http://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin[Parameterized Trigger plugin]
+
+* https://wiki.jenkins-ci.org/display/JENKINS/PowerShell+Plugin[PowerShell plugin]
+
+* http://wiki.jenkins-ci.org/display/JENKINS/Run+Condition+Plugin[Run Condition Plugin]
+
+* http://wiki.jenkins-ci.org/display/JENKINS/Slack+Plugin[Slack Notification Plugin]
+
+* http://wiki.jenkins-ci.org/x/CwDgAQ[Static Analysis Utilities]
+
+* http://wiki.jenkins-ci.org/display/JENKINS/Team+Foundation+Server+Plugin[Team Foundation Server Plug-in]
+
+* http://wiki.jenkins-ci.org/display/JENKINS/Build+User+Vars+Plugin[user build vars plugin]
+
+* http://wiki.jenkins-ci.org/x/G4CGAQ[Warnings Plug-in]
+
+* http://wiki.jenkins-ci.org/display/JENKINS/xUnit+Plugin[xUnit plugin]
+
+
+Also:
+
+* https://wiki.jenkins-ci.org/display/JENKINS/JobConfigHistory+Plugin[Job Configuration History Plugin] +
++
+helpful for devs to track manual changes (when hacking around on the local CI)
+
+
+[[releng-devenv_sdmbuild1-account]]
+== sdmbuild1 account
+
+Chocolatey installs Jenkins to run under `LocalSystem`.
+However, for proper git access we need to run using the `WELFARE\sdmbuild1` account:
+
+* Set up `WELFARE\sdmbuild1` to be a local administrator on the PC: +
++
+image::_images/Jenkins/sdmbuild1-as-administrator-locally.png[link="_images/Jenkins/sdmbuild1-as-administrator-locally.png"]
++
+Then reboot.
+
+* Next, set up the powershell profile for the `sdmbuild1` account. +
++
+This should use the standard link:http://docserver/ReleaseEngineering/DeveloperGuide/setting-up/pc-setup-guide/_resources/_setting-up-powershell/Microsoft.PowerShell_profile.ps1.txt[`Microsoft.PowerShell_profile.ps1`], copied to `C:\Users\sdmbuild1\Documents\WindowsPowerShell`
+
+* Next, update the `sdmbuild1` profile so that it uses locally-checked out versions of the release engineering scripts (rather than the "production" versions deployed to the `Z:` drive). +
++
+The standard profile (copied over in the previous step) defines a `Use-LocalModules` function: +
++
+[source]
+----
+function Use-LocalModules {
+    $env:PSModulePath = "D:\git\ReleaseEngineering\BuildScripts\PSModules;$env:PSModulePath"
+    $env:PSModulePath = "D:\git\ReleaseEngineering\BuildScripts\PSModules\ThirdParty;$env:PSModulePath"
+}
+----
++
+All you therefore need to do is to call this function by adding the following at the bottom of ``sdmbuild``'s profile: +
++
+[source]
+----
+Use-LocalModules
+----
+
+* Finally, update the Jenkins service to run under the `WELFARE\sdmbuild1` account: +
++
+image::_images/Jenkins/service-logon-sdmbuild1.png[link="_images/Jenkins/service-logon-sdmbuild1.png"]
+
+
+You can confirm that this is working correctly by manualy creating a freestyle job with a single Powershell command:
+
+[source]
+----
+write-host $env:PSModulePath
+----
+
+Run the job and confirm the path is correct (with locally checked out scripts earlier in the path than the "production" files on `Z:` drive).
+
+[[releng-devenv_credentials]]
+== Credentials
+
+Set up a credentials key in order that the Jenkins git plugin can checkout code:
+
+image::_images/Jenkins/credentials.png[link="_images/Jenkins/credentials.png"]
+
+To do so:
+
+* `Jenkins > Credentials > System`
+
+* click on "Global credentials (unrestricted)"
+
+* `Add Credentials`
+
+* Enter:
+
+** Kind = Username with password
+** Scope = Global
+** Username = `welfare\sdmbuild1`
+** Password = (ask REM team)
+** Id = `d14ef618-5e4f-4108-ae7f-db10f3cb5016` +
++
+This ID is hard-coded in the pipeline templates.
+
+
+
+
+[[releng-devenv_credentials-unset-git-credential-helper]]
+=== Unset Git Credential Helper
+There is a known issue that makes the git plugin to hang when fetching a git repository.
+
+The plugin is likely to stop at this line:
+
+[source,bash]
+----
+using GIT_ASKPASS to set credentials 
+ > git.exe fetch --tags --progress http://vssdmlivetfs:8080/tfs/BOMiLiveTFS/BOMI_Infrastructure/_git/sdm.util +refs/heads/*:refs/remotes/origin/*
+----
+
+The reason is likely to be that:
+
+_"the Jenkins Git Client plugin relies on the https://github.com/jenkinsci/git-client-plugin/blob/2a2c6d339dcda8556b267f8a3584a5dd762be387/src/main/java/org/jenkinsci/plugins/gitclient/CliGitAPIImpl.java#L1714[GIT_ASKPASS] variable being set, which according to credential helper https://git-scm.com/docs/gitcredentials[documentation] is used when there are no credential helpers defined."_
+
+
+To fix it, ensure the git credential.helper is not set.
+open up a command line as an admin and type git config credential.helper and if anything is returned then you must run these commands bellow 
+
+[source,bash]
+----
+git config --global --unset credential.helper
+git config --system --unset credential.helper
+----
+
+
+See http://stackoverflow.com/a/37753202/2699981[this answer from Stack Overflow for full details].
+
+[[releng-devenv_access_control]]
+== Access Control for Builds
+Starting with Job DSL 1.60, script security for Job DSL scripts is enabled by default if Jenkins security is enabled. https://wiki.jenkins-ci.org/display/JENKINS/Authorize+Project+plugin[Authorize Project plugin] provides the functionality to allow scripts to run.
+
+
+Manage Jenkins \ Configure Global Security \ 
+Tick 'Enable script security for Job DSL scripts' 
+
+Manage Jenkins \ Configure Global Security \ Access Control for Builds \ Project default Build Authorization \ Strategy \ 
+Select 'Run as User who Triggered Build'
+
+
+
+== Deploy SdmServer
+The job 'Deploy SdmServer' must run as the user 'Welfare\nonprodsqluser'.
+
+Deploy SdmServer \ Bindings \ Credentials \ Add.
+
+Deployments directory must be shared to allow cache to be copied.
+
+[[releng-devenv_tools]]
+== Tools
+
+In addition to Powershell, the build scripts that generate documentation also use Maven (to run Asciidoc plugin) and the job to reindex the link:http://docserver[http://docserver] uses NodeJS.
+
+If you want to run these jobs/scripts, you'll therefore need these tools installed using Chocolatey.
+
+At this time there is no special configuration of Jenkins (eg to define tool locations); they are simply picked up from the `$env:PATH`.
+
+
+
+[[releng-devenv_set-up-ci-snowflakes]]
+== Set Up CI "Snowflakes"
+
+The production link:http://ciserver[http://ciserver] has a number of "snowflake" jobs (ie custom jobs) which are used to seed other jobs.
+
+Specifically, there is:
+kykykik
+* _Seed BomiArtifact Pipeline_ +
++
+Used to create a pipeline for a single TFS team project/git repo
+
+* _Seed All-in-One Pipeline_ +
++
+Used to create a pipeline for the (`Trunk` repo of) a mirror of TFS holding the BOMi2/4 (eg `$/SDM_DEV_MIRROR/Trunk`, or `$/INTEG_MIRROR/Trunk`).
+
+* _SeedAll_bomi_Artifacts +
++
+Which will iterate over all team projects / git repos and create the appropriate pipelines.
+
+When developing locally you will most likely be enhancing ether the BOMiArtifact Pipeline or the All-in-One pipeline, so you'll want to set up these snowflake jobs.
+However, you probably won't need to run _SeedAll_bomi_artifacts.
+
+Rather than set up these seed jobs manually, you can use the XML job definitions available in the link:http://vssdmlivetfs:8080/tfs/BOMiLiveTFS/ReleaseEngineering/_git/CISnowFlakes[ReleaseEngineering/CISnowFlakes].
+
+Clone the repo, and then copy the jobs as necessary.
+For example, to set up _Seed BOMiArtifact Pipeline_ and _Seed All-in-One Pipeline_, you should end up with:
+
+[source]
+----
+- (Admin)
+ +- config.xml
+  - jobs
+    + Seed BomiArtifact Pipeline
+      - config.xml
+    + Seed All-in-One Pipeline
+      - config.xml
+----
+
+[[releng-devenv_Seed_All]]
+== Seeding jobs in a generic way
+
+We have at least 3 Jenkins Admin jobs. 
+
+1) Seed-All Pipeline
+
+2) Seed-Artifact Pipeline
+
+3) Seed-All-In-One Pipeline
+
+To generate these jobs we have created a very generic "Seed Job" called Bootstrap. 
+It processes a given groovy file (Bootstrap.groovy) as DSL.
+
+
+=== Creating the "Seed Job" Bootstrap
+
+Once Jenkins is configured, the developer has to create a project on Jenkins called Bootstrap.
+
+First create a new item.
+
+image::_images/Jenkins/newItem.png[link="_images/Jenkins/newItem.png"]
+
+Select Freestyle Project and call it Bootstrap.
+
+image::_images/Jenkins/Bootstrap.png[link="_images/Jenkins/Bootstrap.png"]
+
+In configuration, add the following Build Steps..
+
+First, add to config the *Windows Powershell* step.
+
+image::_images/Jenkins/PowerShell.png[link="_images/Jenkins/PowerShell.png"]
+
+In Powershell Command add the following
+
+[source]
+----
+cp "Z:\ReleaseEngineering\autopub\BuildScripts\CI\Bootstrap\Bootstrap.groovy" .
+----
+
+image::_images/Jenkins/windowsPS.png[link="_images/Jenkins/windowsPS.png"]
+
+Second, add to config the *Process Job DSL* step.
+
+image::_images/Jenkins/DSL.png[link="_images/Jenkins/DSL.png"]
+
+Within the DSL Scripts add the Bootstrap.groovy file
+
+image::_images/Jenkins/BootstrapDSL.png[link="_images/Jenkins/BootstrapDSL.png"]
+
+Save and Build!!! 
+
+You will see in the Admin folder that all 3 Seed jobs have been generated and are ready to be built. 
+
+image::_images/Jenkins/SeededJobs.png[link="_images/Jenkins/SeededJobs.png"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

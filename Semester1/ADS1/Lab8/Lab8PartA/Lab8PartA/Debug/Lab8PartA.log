@@ -1,0 +1,8 @@
+﻿  Source.cpp
+  ListOfDoubles.cpp
+c:\users\delluser\college\ads1\lab8parta\lab8parta\listofdoubles.cpp(86): warning C4553: '==': operator has no effect; did you intend '='?
+c:\users\delluser\college\ads1\lab8parta\lab8parta\listofdoubles.cpp(93): warning C4553: '==': operator has no effect; did you intend '='?
+  Generating Code...
+c:\users\delluser\college\ads1\lab8parta\lab8parta\listofdoubles.cpp(115): warning C4715: 'ListOfDoubles::operator=': not all control paths return a value
+  Lab8PartA.vcxproj -> C:\Users\DellUser\College\ADS1\Lab8PartA\Debug\Lab8PartA.exe
+  Lab8PartA.vcxproj -> C:\Users\DellUser\College\ADS1\Lab8PartA\Debug\Lab8PartA.pdb (Partial PDB)

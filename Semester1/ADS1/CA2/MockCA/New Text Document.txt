@@ -1,0 +1,17 @@
+Phone class or struct 
+name id
+
+node class, points to next node
+constructor
+with name and id
+
+list class
+with head attribute
+default constructor
+copy constructor
+overloaded =
+destructor
+insert
+deleteMostRecent
+display
+getMethod given name or id

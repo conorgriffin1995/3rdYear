@@ -1,0 +1,40 @@
+= New platform
+:_basedir: ../
+:_imagesdir: _images/
+:toc: right
+
+
+*REM Dev Environment:*
+
+* xref:releng-devenv/releng-devenv.adoc#[REM team developers' guide] +
++
+For use by the REM team, updating build scripts and developing new CI pipelines on Jenkins etc.
+
+
+*Policies:*
+
+* xref:livefix-branching/livefix-branching.adoc#[Live fix branching approach] +
++
+Proposal to simplify the way that live fixes are handled once we move to git.
+
+
+
+*Procedures:*
+
+* xref:create-service-hook/create-service-hook.adoc#[Creating a git service hook] +
++
+Whenever create a new TFS team project
+
+* xref:creating-a-git-mirror/creating-a-git-mirror.adoc#[Creating a git mirror]
+
+* xref:per-rel/per-rel.adoc#[per-Release] (incomplete)
+
+* xref:db-rel-mgmt/db-rel-mgmt.adoc#[DB Rel Mgmt] (incomplete)
+
+
+*Troubleshooting:*
+
+* xref:troubleshooting-mirror-sync-process/troubleshooting-mirror-sync-process.adoc#[Troubleshooting mirror sync process] +
++
+For if and when git/tfs sync gets stuck.
+

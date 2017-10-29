@@ -1,0 +1,16 @@
+Node Class
+default cons
+overlaoded const
+Game struct
+name 
+price 
+
+List
+default cons
+insert
+display
+deletemostrecent
+deletefromposition
+getGame
+
+The Big Three!

@@ -1,0 +1,4 @@
+﻿  Source.cpp
+  ListOfDoubles.cpp
+  Generating Code...
+LINK : fatal error LNK1168: cannot open C:\Users\DellUser\College\ADS1\Lab6PartB(sectionAandB)\Lab6PartB\Debug\Lab6PartB.exe for writing

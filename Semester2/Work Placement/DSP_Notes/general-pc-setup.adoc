@@ -1,0 +1,584 @@
+[[general-pc-setup]]
+= General PC Setup
+:_basedir: ../../
+:toc: right
+
+[WARNING]
+====
+This documentation is somewhat out-of-date.
+====
+
+== Introduction
+
+
+These notes are based on setup of “**Win7x64DevVer4.0 **on a LENOVO i7 DEC PC starting from the “old” DEV PC Image @ 26/Nov/2013.
+
+The end result is a CLONED PC IMAGE named “**Win7x64DevVer4.0”** – contact Gary Kavanagh or Dave Foster for a copy of this clone.
+
+The setup is based on that image, the instructions here basically a consolidated and updated (hopefully improved) set of instructions across both BOMi2 and BOMi4 – based on previous developer documents for both
+  platforms.
+
+With minor changes (eg. Path names on C:\ drive instead of D:\ drive, this could also be used for DEV PC setup on an older HP box or Lenovo box).
+
+
+[[__general-pc-setup]]
+== GENERAL PC SETUP
+
+=== Modified Folder Options to see filetypes etc.
+
+image::_images/1.png[alt=general setup, link="_images/1.png"]
+
+image::_images/2.png[alt=general setup, link="_images/2.png"]
+
+=== _Microsoft Lync Install_
+
+The DEV machines should all have Microsoft LYNC installed (used for Instant Messaging between buildings).
+
+=== _Microsoft Office 2010 Install_
+
+The base image has Microsoft 2010 setup on it – this is installed on C:\ drive.
+If space becomes a problem (the C:\ drive in these machines is tight), developers may have to manually remove/install on D: drive instead.
+
+
+== Visual Studio 2010 Install
+
+This was already installed on the previous image.
+
+
+== Configure Visual Studio for Development : recommend settings
+
+
+=== Recommend Visual Studio 2010 settings
+
+Tools” > “Options” and the below window will appear. +
+Select “Projects and Solutions” +
+Ensure the following boxes are ticked: 
+
+* “Show advanced build configurations”
+* “Show Output window when build starts”
+* “Show all settings”
+
+image::_images/3.png[alt=general setup, link="_images/3.png"]
+
+Select “Text Editor” > “Basic” +
+Ensure “Line Numbers” is ticked
+
+image::_images/4.png[alt=general setup, link="_images/4.png"]
+
+Select “Debugging” +
+Ensure “Step over properties and operators(Managed Only) is NOT ticked
+
+image::_images/5.png[alt=general setup, link="_images/5.png"]
+
+
+=== _Running Visual Studio as an administrator - pin it to the start menu._
+
+This is described for VS2010, but should work also for VS2012 – do it for both.
+
+Click on start and find the “Microsoft Visual Studio 2010” exe and right click on it
+
+Select “Pin to start menu”
+
+image::_images/6.png[alt=general setup, link="_images/6.png"]
+
+Click on the start button and then right click on “Microsoft Visual Studio” and choose properties.
+
+image::_images/7.png[alt=general setup, link="_images/7.png"]
+
+Select the advanced button
+
+image::_images/8.png[alt=general setup, link="_images/8.png"]
+
+Tick the box "Run as Administrator" and click OK.
+
+image::_images/9.png[alt=general setup, link="_images/9.png"]
+
+=== _Setting up VS Launcher._
+
+It’s a convenience that when you click on a SLN file, it launches and determines the type of Visual Studio (2010, 2012 etc.) to run.
+
+[NOTE]
+====
+This is not on the base image, and wasn’t tested on the LENOVO i7 machines.
+====
+
+go to start => run and type in “VSLauncher” (This may not be on your system, it’s not mandatory)
+
+image::_images/10.png[alt=general setup, link="_images/10.png"]
+
+Right click on the launcher and select Properties.
+
+In the properties window choose the “Compatability” tab and ensure “Run as Administrator” is checked.
+
+image::_images/11.png[alt=general setup, link="_images/11.png"]
+
+
+== Visual Studio 2012 Install
+
+Installed from media on Brendan Cowan’ss PCKMA0200 machine.
+Installed Ultimate edition as per Brens’ advice.
+
+image::_images/12.png[alt=general setup, link="_images/12.png"]
+
+image::_images/13.png[alt=general setup, link="_images/13.png"]
+
+image::_images/14.png[alt=general setup, link="_images/14.png"]
+
+**Note: **Cancelled the install (should have done in administrator mode) , and them went to run it
+again (in admin mode) & took the  “REPAIR” option when prompted. Maybe should
+have uninstalled & reinstalled?, let’s see if any problems.?
+
+image::_images/15.png[alt=general setup, link="_images/15.png"]
+
+Opened Visual Studio & selected “C# Development Settings” as the default… +
+Installed the VS update (as in setup docs) from a slightly updated location since the original doc was done +
+http://www.visualstudio.com/downloads/download-visual-studio-vs[http://www.visualstudio.com/downloads/download-visual-studio-vs]
+
+image::_images/16.png[alt=general setup, link="_images/16.png"]
+
+WARNING: Needed to finish the local
+SETUP before downloading/running the VS2012 “Update” above, since that starts
+another setup/install.
+
+While waiting for VS2012 update… **RAN OK.**
+
+== Install NANT on SDM Developer PC's
+
+Copy NANT from file:///\\cskma0242\Tools\Nant\nant+contrib-0.90[\\cskma0242\Tools\Nant\nant+contrib-0.90]
+to **D:\Program Files\NANT**
+
+Add C:\Nant\bin to the Environment Variable called “PATH”
+
+                Go to: ControlPanel\All Control Panel Items\System
+
+                Select: Advanced System Settings
+
+image::_images/17.png[alt=general setup, link="_images/17.png"]
+
+Click on Environment Variables
+
+image::_images/18.png[alt=general setup, link="_images/18.png"]
+
+Edit System Variable Called “Path” & Append “D:\Program Files\nant\bin”
+(or wherever you copy-installed NANT)
+
+Make sure to separate the previous entry with a semi-colon.
+
+image::_images/19.png[alt=general setup, link="_images/19.png"]
+
+== Checking the PowerShell Policy
+
+In order to ensure powershell has the correct policy permissions to execute
+scripts run the command
+
+        Get-ExecutionPolicy
+
+on both version of powershell.
+
+*   32-bit can be found at %SystemRoot%\system32\WindowsPowerShell\v1.0\powershell.exe
+*   64-bit can be found at %SystemRoot%\syswow64\WindowsPowerShell\v1.0\powershell.exe
+
+After running the command you should see the response “Unrestricted”
+
+image::_images/20.png[alt=general setup, link="_images/20.png"]
+
+If you do not get this response from any version of powershell execture the
+command
+
+        Set-ExecutionPolicy unrestricted
+
+on that particular version
+
+image::_images/21.png[alt=general setup, link="_images/21.png"]
+
+== Setting up Attunity for BOMi2 Development
+
+=== _Give all users permissions to the Attunity folder on the DEV PC_
+Go to the Attunity folder (eg. C:\Program Files\Attunity) and right-click, Properties, go to
+“Security TAB”.
+
+Click on “Users”,
+“EDIT”, then click “Users” and click on “Full control” & other checkboxes, and press APPLY and then OK button.
+
+image::_images/22.png[alt=general setup, link="_images/22.png"]
+
+=== _Talk nicely to Johnathan Murphy and/or Caroline Courtney_
+**Note: This has already been done on the **[underline]#Win7x64DevVer4.0#**
+clone – no need to do this on individual developer machines any more – unless
+specific datasources are needed. (**only some basic data sources - DEV1, SYS1
+etc. have been installed by default**). All the firewall, security &
+DTC configuration has been done on the clone and seems to have worked OK on
+copies made from it.
+
+The Attunity software needs some centralised administration done via an administration
+console. Jonathan Murphy or Caroline Courtney have access to this software.
+
+*   Caroline Courtney (DSP) on 43225
+*   Dave O’Dwyer (DSP) on 43260
+*   Jonathan Murphy (Bearing Point) on 40420
+
+All of the above are very
+helpful, but this is not “their job”, they are just the ones with the admin
+software and who know how to use it. Tell them you are installing a new
+Developer PC and ask for help with getting the Attunity settings configured –
+you want the “DEV1” data sources, and whatever other black magic is needed for
+connectivity. This can only be done remotely via the Attunity Admin software. 
+[underline]#They will need your PC Name **(eg. PCKMA0NNN)**#
+
+=== _Set up windows firewall to allow Attunity IRPCD.EXE and NAV_UTIL.EXE_
+You need to set up INBOUND rules for attunity.
+
+image::_images/23.png[alt=general setup, link="_images/23.png"]
+
+image::_images/24.png[alt=general setup, link="_images/24.png"]
+
+**Above: **Click “Allow Another Program”, and browse to both IRPCD.EXE and
+nav_util.EXE (both separately) , and “ADD” them. This should leave you with both
+Attunity programs listed in the screenshot below.
+
+image::_images/25.png[alt=general setup, link="_images/25.png"]
+
+Press OK to save it.
+
+=== _Set up windows firewall [underline]#Inbound# Rules for Attunity_
+Select “Advanced Settings”, then “Inbound Rules”, then “New Rule” option…
+
+image::_images/26.png[alt=general setup, link="_images/26.png"]
+
+[underline]#Below:# Select “Predefined”, and “Distributed Transaction
+Co-ordinator”.
+
+image::_images/27.png[alt=general setup, link="_images/27.png"]
+
+[underline]#Below:# Click all 6 rules, and press NEXT.
+
+image::_images/28.png[alt=general setup, link="_images/28.png"]
+
+[underline]#Below:# "Allow the Connection", and press FINISH.
+
+image::_images/29.png[alt=general setup, link="_images/29.png"]
+
+This should leave you with 6 INBOUND Rules set up as follows.
+
+image::_images/30.png[alt=general setup, link="_images/30.png"]
+
+=== _Set up windows firewall [underline]#outbound# Rules for Attunity_
+
+Do roughly same steps as for Inbound rules.
+
+Select “Outbound Rules” on the left hand side, click “New Rule”, select “Predefined/”Distributed
+Transaction co-ordinator”, and it will leave you with 2 outbound rules as in
+the screenshot below.
+
+image::_images/31.png[alt=general setup, link="_images/31.png"]
+
+CLICK NEXT, allow the connection
+
+image::_images/32.png[alt=general setup, link="_images/32.png"]
+
+This will leave you with TWO outbound rules for DTC as in the screenshot below.
+
+image::_images/33.png[alt=general setup, link="_images/33.png"]
+
+=== _Configure DTC for Network Access_
+
+Run “Component Services”, browse to “My Computer”, “Distributed transaction Co-ordinator”,
+“LOCAL DTC” and select “Properties”, and go to the SECURITY TAB. Then click on
+the checkboxes as in the screenshot below.
+
+Click [underline]#APPLY# first and then OK.
+
+image::_images/34.png[alt=general setup, link="_images/34.png"]
+
+=== _Check that Attunity is working using "ChapView"_
+
+image::_images/35.png[alt=general setup, link="_images/35.png"]
+
+Using the Attunity “SQL Utility” , do the following as a test.
+
+CONNECT to Attunity.
+
+image::_images/36.png[alt=general setup, link="_images/36.png"]
+
+Select the DEV1_AttCRSMain_RO data source from the list, and run “Select * from Client
+limit to 10 rows”
+
+image::_images/37.png[alt=general setup, link="_images/37.png"]
+
+== INSTALL WINDOWS IDENTITY FOUNDATION - BOMi4 Pre-REQUISITE
+
+Before doing this, you will need VS20**[underline]#12#** installed &
+setup, and connected to TFS, got latest code 
+etc.. (all in previous sections).
+
+=== Install WIF
+Browse to the link below:
+
+http://www.microsoft.com/en-us/download/details.aspx?id=17331[http://www.microsoft.com/en-us/download/details.aspx?id=17331]
+
+Please download the file with the name Windows6.1-KB974405-x64.msu and then
+install it on the server
+
+== Install .NET 4.5
+
+Download and Install .NET 4.5 from Microsoft.com (Note: This
+may already be installed with VS2012 – check in add/remove programs.)
+
+http://www.microsoft.com/en-us/download/details.aspx?id=30653[http://www.microsoft.com/en-us/download/details.aspx?id=30653]
+
+This will require a restart of the machine
+
+== INSTALL ORACLE RDP Data Provider
+This is now mandatory in order to be able to run the BOMi4
+web application on your local DEV app server.
+
+=== Install Oracle RDP Provider from
+
+The Oracle Data Provider (as @ Oct 2012) available is available here
+
+file:///\\cskma0289\Exploration\Software\OracleORDBDrivers%20for%20VS\ordt73220_2012[\\cskma0289\Exploration\Software\OracleORDBDriversfor VS\ordt73220_2012]
+
+Run this in  Administrator mode …..!
+
+
+=== Make the Oracle RDP Data Provider capable of running in 64-bit processes
+
+The Oracle RDP Provider is a 32-bit install. It installs in the 32-bit
+Program Files, and modifies the 32-bit machine.config file…. But is capable of
+running in 64-bit mode. However, the install is not 64-bit aware. This means
+that  you have to [underline]#manually# (very carefully!) copy the relevant config entries
+from the 32-bit machine.config to the 64-bit machine config. This is not
+necessary on development PC’s [underline]#IF# you are using the default VS appserver
+(which is 32-bit), but it you are running full IIS in 64-bit mode (or
+installing on a test or live server) … you will need to do the following in addition to the normal install. The
+normal install itself (described above) is a one-click run the setup.exe
+(important that it is run as as
+administrator).
+
+*   The install will install in the 32-bit
+     machine.config
+*   file:///\\vssdmtest0028\c$\Windows\Microsoft.NET\Framework64\v4.0.30319\Config[Windows\Microsoft.NET\Framework\v4.0.30319\Config]
+*   If running 64-bit you need to copy the
+     entries (manually) to the 64-bit machine.config file:///\\vssdmtest0028\c$\Windows\Microsoft.NET\Framework64\v4.0.30319\Config[Windows\Microsoft.NET\Framework64\v4.0.30319\Config]
+
+Edit the Machine.Config [underline]#in
+administrator mode (ie. Start Notepad in admin mode – if not, you wont be able
+to save the file).#
+
+**Add this
+inside </configSections>** +
+<section name="oracle.dataaccess.rdbclient"
+type="System.Data.Common.DbProviderConfigurationHandler, System.Data,
+Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"/>
+
+**Add this
+inside </DbProviderFactories>** +
+<add name="Oracle Rdb Data Provider" invariant="Oracle.DataAccess.RdbClient"
+description=".Net Framework Data Provider for Oracle Rdb"
+type="Oracle.DataAccess.RdbClient.RdbFactory, Oracle.DataAccess.Rdb,
+Version=7.3.2.1, Culture=neutral, PublicKeyToken=24caf6849861f483"/>
+
+[underline]#Note:# Both of these can be
+copied over from the 32-bit version of the machine.config file where the
+install puts them.
+
+[underline]#Note#: If you install the
+ORDP more than once on top of itself, the installer puts multiple copies of the
+entry in DbProviderFactories .. which causes problems. Be aware of this &
+make sure any uninstall has removed the ORDP entries from this list.
+
+[underline]#Note:# This manual update
+for 64-bit operation is necessary in order to run the BOMi4 web application in
+full 64-bit IIS (as opposed to 32-bit DEV appserver in Visual Studio).
+
+== Turn [underline]#OFF# "Compatibility Mode" in EI8
+
+The standard client browser is Internet Explorer 8.  The default configuration in DSP is for any
+Intranet sites to be opened in Compatibility mode.  This means that any requests to IIS get
+treated as IE7 requests.  Naked Objects
+requires IE8 or higher so this Compatibility mode needs to be disabled for
+Intranet sites.
+
+*   Open Internet Explorer, select Tools,
+     select Compatibility View Settings.
+*   Make sure “Display intranet sites in
+     Compatibility View” is not checked.
+
+
+image::_images/38.png[alt=general setup, link="_images/38.png"]
+
+=== _GENERAL UTILITIES SETUP_
+
+Consider installing:
+
+*   Notepad++
+*   Agent Ransack
+*   Beyond Compare (or WINMERGE)
+
+Instructions/locations for these are in the relevant APPENDICES.
+
+=== Create a Command Line "as administrator" shortcut
+
+Click the start button and type “CMD” in the run box
+(do not hit enter)  
+
+    Right click on the “CMD”
+    program in the list and select “Pin to Start Menu” 
+    
+
+image::_images/39.png[alt=general setup, link="_images/39.png"]
+
+Click the start button, and then
+right click on the CMD program and select “Run as Administrator”
+
+image::_images/40.png[alt=general setup, link="_images/40.png"]
+
+== ILSPY - .NET dissassembler
+Used for disassembling .NET assemblies, and inspecting the manifest (to see if 32-bit
+or 64-bit)
+
+Available FREE from
+http://ilspy.net/[http://ilspy.net/]
+
+It’s available
+locally in file:///\\cskma0242\tools\ILSPY\ILSpy_Master_2.1.0.1603_RTW_Binaries[\\cskma0242\tools\ILSPY\ILSpy_Master_2.1.0.1603_RTW_Binaries]
+
+*   copy it into **D:\ProgramFiles\ILSPY**
+*   PIN it to the start menu (and RC, “Advanced” and set “run as administrator”.
+
+== BEYOND COMPARE - source code/text & folder comparison tool
+
+Beyond compare 3 is already installed on the base image. Running it for the first time will require  a licence key. Paste in the
+licence key below.
+ 
+**[underline]#Note: LENOVO
+i7 TEST MACHINE:#** This key may was installed on the LENOVO i7 test
+machine, so may already be included in the LENOVO i7 DEV PC Image.
+
+QUESTION: Is this a volume licence key 
+- from recollection, I think it is ?
+
+image::_images/41.png[alt=general setup, link="_images/41.png"]
+
+--- BEGIN LICENSE KEY ---
+
+RTxJrSPVGiTJewu6dvoiiamUYFM-7voz3BqNPYD+G8cr0WzS12Nyq5fxT
+
+zWOvbxuLXBQcXIF55s7tfukn8kF5NJzJXE6YVapYW7f+tRRXRFI4yn4Nj
+
+jZ0RiiqGRCTVzwComUcXB-eiFWRBY6JpSsCNkmIxL5KsRCo442djHhTZE
+
+--- END LICENSE KEY -----
+
+Information on how to use Beyond Compare (and how to setup with Visual Studio) available from http://www.scootersoftware.com/[http://www.scootersoftware.com/] +
+ +
+ +
+
+
+
+
+
+**Activate Beyond Compare for VS**
+
+(During this process you may
+be asked for a licence key, this is listed below)
+
+1. In Visual Studio Choose Options
+from the Tools menu.
+
+2. Expand Source Control in the
+treeview.
+
+3. Click Visual Studio Team
+Foundation Server in the treeview.
+
+4. Click the Configure User Tools
+button.
+
+5. Click the Add button.
+
+6. Enter ".*" in the
+Extension edit.
+
+7. Choose Compare in the Operation
+combobox.
+
+8. Enter the path to BComp.exe in
+the Command edit.
+
+9. In the Arguments edit, use:
+
+%1 %2 /title1=%6 /title2=%7
+
+**2-way Merge (v3 Pro)**
+
+1. Follow steps 1-6 above.
+
+2. Choose Merge in the Operation combobox. 
+
+3. Enter the path to BComp.exe in the Command edit.
+
+4. In the Arguments edit, use:
+
+%1 %2 /savetarget=%4 /title1=%6/title2=%7
+
+**Visual Studio 2012 compare Setup using Beyond compare**
+
+**From http://www.scootersoftware.com/support.php?zz=kb_vcs[http://www.scootersoftware.com/support.php?zz=kb_vcs]**
+
+1. In Visual Studio Choose **Options** from the **Tools** menu.
+
+2. Expand **Source Control** in the treeview. 
+
+3. Click **Visual Studio Team Foundation Server** in the treeview.
+
+4. Click the **Configure User Tools** button.
+
+5. Click the **Add** button.
+
+6. Enter ".*" in the **Extension** edit.
+
+7. Choose **Compare** in the **Operation** combobox.
+
+8. Enter the path to BComp.exe in the **Command** edit.
+
+9. In the **Arguments** edit, use:  
+
+%1 %2 /title1=%6 /title2=%7
+
+image::_images/42.png[alt=general setup, link="_images/42.png"]
+
+**Visual Studio 2012 3-way merge Setup using Beyond compare**
+
+1. Follow steps 1-6 above. <o:p></o:p>
+
+2. Choose **Merge** in the **Operation** combobox. <o:p></o:p>
+
+3. Enter the path to BComp.exe in the **Command** edit. <o:p></o:p>
+
+4. In the **Arguments** edit, use:  
+
+%1 %2 %3 %4 /title1=%6 /title2=%7 /title3=%8
+/title4=%9
+
+The 3-way merge takes a little
+while to get used to – but is much better than the old 2-way merge (which is
+still available) – it’s well worth persevering with 3-way to get used to it. http://www.scootersoftware.com/moreinfo.php?zz=screenshot&shot=TextMerge[http://www.scootersoftware.com/moreinfo.php?zz=screenshot&shot=TextMerge]
+
+=== AGENT RANSACK - File system search utility
+
+This is a very
+useful (FREE) file search utility
+
+\\cskma0242\tools\AgentRansack (File System Search - Fast)
+
+Or available from http://www.mythicsoft.com/agentransack[http://www.mythicsoft.com/agentransack]
+
+=== NOTEPAD++
+
+This is a really good Free text editor (with syntax highlighting for code)
+
+Available from http://notepad-plus-plus.org[http://notepad-plus-plus.org]
+
+Or available locally at \\cskma0242\tools\notepad++ text_editor
+

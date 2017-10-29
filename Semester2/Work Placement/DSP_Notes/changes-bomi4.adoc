@@ -1,0 +1,497 @@
+= Changes for BOMi4
+:_basedir: ../../
+:_imagesdir: _images/
+:toc: right
+
+This document describes ... TODO ...
+
+[WARNING]
+====
+This documentation has been ported from MS Word to Asciidoc, but has otherwise been reviewed.
+Some of the information is likely to be stale.
+====
+
+
+== Changes required to IIS
+
+* In IIS in the root, select “Server Certificates” as shown below:
++
+image::_images/1.png[alt=changes to bomi4, link="_images/1.png"]
+
+* In server certificates import your cert if production or else for development you can create a self signed cert as shown below.
++
+image::_images/2.png[alt=changes to bomi4, link="_images/2.png"]
++
+[NOTE]
+====
+This cert should be issued to the name of the PC/SERVER that IIS is on
+(creating a self signed cert in iis will do this automatically.)
+====
+
+* After
+creating/importing your cert you need to assign it to the website.
+So in the website that the bomi is in you need to right click your website and select “Edit Bindings” as shown below:
++
+image::_images/3.png[alt=changes to bomi4, link="_images/3.png"]
+
+* This then brings you into the site bindings as shown below.
+By default HTTP port 80 should be there.
+Wer'e looking for HTTPS port 443, if this is not there select Add:
++
+image::_images/4.png[alt=changes to bomi4, link="_images/4.png"]
+
+* After pressing add you get the below screen.
+Add a new binding for HTTPS on port 443 as shown below.
+Select the cert from the drop down list that you created in the previous steps in “Server Certificates”: +
++
+image::_images/5.png[alt=changes to bomi4, link="_images/5.png"]
+
+IIS and BOMI4 should be setup now to be able to run over HTTP or HTTPS
+
+[NOTE]
+====
+We might be able to get away with not using HTTPS for BOMI4.
+ADFS requires the app to be HTTPS.
+If the load balancer address is HTTPS ADFS will be happy enough.
+After the call goes through the load balancer the BOMI can just be HTTP.
+We would need to test though.
+====
+
+
+== Changes required to SQL Server
+
+A new stored procedure is required that will be used to return all claim info that needs to come from the database eg roles, officer
+location and grade.
+This proc is as follows:
+
+image::_images/code1.png[alt=changes to bomi4, link="_images/code1.png"]
+
+NOTE: This proc is used by the claim rules attached to the
+“Replying Party Trust” in ADFS.
+
+
+== Changes required to ADFS
+
+Connect into your ADFS server and open the ADFS Management Console.
+
+image::_images/6.png[alt=changes to bomi4, link="_images/6.png"]
+
+You should not need to make any changes to “EndPoints” which is marked in
+blue above.
+All other sections pointed to with a red arrow do have to be configured.
+Each of these are as follows:
+
+
+=== Certificates
+
+This section should be setup from the installation for
+you.
+Things to check though.
+Make sure that you have three certificates installed “Service Communications”, “Token-decrypting” and “Token-signing”.
+Make sure that the certs have not expired.
+If they have then replace them using the menu options on the right.
+
+Double click the cert “Token-signing” as shown below:
+
+image::_images/7.png[alt=changes to bomi4, link="_images/7.png"]
+
+This will open up the cert.
+When the cert opens select the “Details” tab and scroll down to “Thumbprint” as shown below:
+
+image::_images/9.png[alt=changes to bomi4, link="_images/9.png"]
+
+[IMPORTANT]
+====
+Copy out this “Thumbprint” into notepad++ (**[underline]#not
+Notepad as it will not show you hidden characters!!!!#**)
+====
+
+
+Then remove all the spaces and hidden characters between the letters.
+Hidden characters will be shown as “?”.
+You will be left with something that looks like below:
+
+“88B30DC559F10B33D90991C389944DC282519C1C”
+
+Keep a note of this, you will need this later in the BOMI4 web.config file.
+
+
+=== Claim Descriptions
+
+In here you setup all the claims that are to be supported by this ADFS server.
+We need to setup the different claims that we want to send to BOMI4.
+To add a claim select “Add Claim Description” from the right hand menu.
+You will get a screen like below:
+
+image::_images/10.png[alt=changes to bomi4, link="_images/10.png"]
+
+You will need to setup the following claims:
+
+
+[cols="2,3",options="header"]
+|====================
+|Display Name
+|Claim Identifier
+
+|Name
+|http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name[http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name]
+
+|Role
+|http://schemas.microsoft.com/ws/2008/06/identity/claims/role[http://schemas.microsoft.com/ws/2008/06/identity/claims/role]
+
+|LocalOffice
+|http://schemas.microsoft.com/ws/2008/06/identity/claims/LocalOffice[http://schemas.microsoft.com/ws/2008/06/identity/claims/LocalOffice]
+
+|OfficerGrade
+|http://schemas.microsoft.com/ws/2008/06/identity/claims/OfficerGrade[http://schemas.microsoft.com/ws/2008/06/identity/claims/OfficerGrade]
+
+|Windows
+|http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname[http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname]
+
+We
+might get away with not setting up this one as its passed through from AD.
+Need to test
+
+|====================
+
+Its no harm ticking the two check boxes on the screen also to publish these claims
+
+=== Claims Provider Trusts
+
+You need to setup two trusts “Active Directory” and “federationservice.welfare.irlgov.ie” (you could possible set these up as one trust but just to keep things separate setup two).
+These are shown in the screen shot below:
+
+image::_images/11.png[alt=changes to bomi4, link="_images/11.png"]
+
+
+==== Trust - Active Directory:
+The most important thing about this trust is that there is a rule setup in it to pass through the claim that contains the windows account name eg “welfare\martinhughes”:
+
+* After creating this trust if its not there right click it and select “Edit Rule”.
+* Look for a rule that passes through the windows account name.
+* If its not there select add rule.
+* Then select “Pass Through or Filter an Incoming Claim”.
+* On the next screen enter in a claim rule and select Incoming claim type “Windows account name”.
+* Select the radio button “Pass through all claim values” as show below: +
++
+image::_images/12.png[alt=changes to bomi4, link="_images/12.png"]
++
+image::_images/13.png[alt=changes to bomi4, link="_images/13.png"]
+
+
+==== Trust for federationservice.welfare.irlgov.ie
+
+This trust needs to be setup with the below details:
+
+image::_images/14.png[alt=changes to bomi4, link="_images/14.png"]
+
+The url should be https://federationservice.welfare.irlgov.ie/federationmetadata/2007-06/federationmetadata.xml[https://federationservice.welfare.irlgov.ie/federationmetadata/2007-06/federationmetadata.xml]
+
+image::_images/15.png[alt=changes to bomi4, link="_images/15.png"]
+
+Note the “Claims provider identifier”.
+You will need this later in the BOMI4 web.config file.
+
+image::_images/16.png[alt=changes to bomi4, link="_images/16.png"]
+
+When adding this certificate, this is the Signing certificate
+
+
+=== Replaying Party Trusts
+
+You need to setup one of these for the server that will be using ADFS.
+In the below example it will be my machine.
+It should be configured to look something like below:
+
+image::_images/17.png[alt=changes to bomi4, link="_images/17.png"]
+
+I left the feduration url blank to stop it trying to update from the federation metadata all the time.
+
+image::_images/18.png[alt=changes to bomi4, link="_images/18.png"]
+
+Enter the URL that will be used to access BOMI4
+
+Just make sure on the EndPoints tab that your end point points to the below
+
+https://PCKMA0280.welfare.irlgov.ie/Sdm.App/
+
+Once you have the trust setup, you have to tell it what Claims to return to the replying party.
+To do this right click it and select “Edit Claim Rules”.
+
+We need 4 rules.
+These are to be setup as follows:
+
+[cols="2,3a",options="header"]
+|====================
+
+|Claim Rule Name
+|Custom Rule
+
+|IssueName
+|
+[source]
+----
+c1:[Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname"]
+=> issue(Type = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name",Value = c1.Value);
+----
+
+|IssueAllRolesForUser
+|
+[source]
+----
+c:[Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]
+ => issue(store =
+"RolesFromDBForBOMI4", types =
+("http://schemas.microsoft.com/ws/2008/06/identity/claims/role"),
+query = "EXEC [Security].[usp_ro_GetBOMI4Claims] @claimType='ROLE',
+@userId={0}", param = c.Value);
+----
+
+
+|IssueLocalOffice
+|
+[source]
+----
+c:[Type ==
+"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]
+ => issue(store =
+"RolesFromDBForBOMI4", types =
+("http://schemas.microsoft.com/ws/2008/06/identity/claims/LocalOffice"),
+query = "EXEC [Security].[usp_ro_GetBOMI4Claims] @claimType='LOCALOFFICE',
+@userId={0}", param = c.Value);
+----
+
+|IssueOfficerGrade
+|
+[source]
+----
+c:[Type ==
+"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]
+ => issue(store =
+"RolesFromDBForBOMI4", types = ("http://schemas.microsoft.com/ws/2008/06/identity/claims/OfficerGrade"),
+query = "EXEC [Security].[usp_ro_GetBOMI4Claims]
+@claimType='OFFICERGRADE', @userId={0}", param = c.Value);
+----
+
+|====================
+
+After you have entered in the 4 rules you should have a screen that looks like the following:
+
+image::_images/19.png[alt=changes to bomi4, link="_images/19.png"]
+
+[IMPORTANT]
+====
+IssueName must be the first rule.
+The “IssueName” claim is gotten from active directory from the “windowsaccountname” claim that was passed through.
+
+The other three rules make a call to the dbBommain database via a stored procedure called `[Security].[usp_ro_GetBOMI4Claims]`.
+This proc takes two paramaters:
+
+* the first is the type of claims you want returned eg the users roles
+* the second is the windows login eg “welfare\martinhughes” +
++
+Must have the domain on the front, very important!
+====
+
+
+=== Attribute Stores
+
+We need two attribute stores.
+
+The first is Active Directory.
+To set this up select “Add Attribute Store” on the next screen select the following:
+
+image::_images/20.png[alt=changes to bomi4, link="_images/20.png"]
+
+The second attribute store is a store to hold a connection to the database “dbBommain”.
+It should be setup as follows:
+
+image::_images/21.png[alt=changes to bomi4, link="_images/21.png"]
+
+Note the above is fine for test but in a production environment the connection string should be setup like the below ie it uses integrated security.
+
+*_Data Source=vssdm0043\DEV1;integrated security=SSPI;database=dbbommain_*
+
+By doing this it will use the login details of the account attached to the ADFS windows service.
+Make sure that this ADFS account has access to whatever database you are connecting to.
+
+To see what account ADFS is running under do the following:
+
+* Go into “Services” and double click “AD FS 2.0 Windows Service” +
++
+image::_images/22.png[alt=changes to bomi4, link="_images/22.png"]
+
+* This brings up a window, select the Log On tab as shown below: +
++
+image::_images/23.png[alt=changes to bomi4, link="_images/23.png"]
+
+This shows the account that is used when running ADFS. This
+account must be a user on the sql server database.
+
+=== How to turn on logging in ADFS
+
+Sometimes when debugging issues you find that the browser will not give you much information around errors.
+I found Chrome to give you better error messages than Internet explorer sometimes but generally the information given was poor.
+To find out what was really going on and to get detailed error messages you had to turn on ADFS Event log logging on the ADFS server.
+
+To do this follow the below steps:
+
+* Open Event Viewer > Go to Applications and Services Logs > AD FS 2.0
+
+* Right click and select View, Select Show analytic and debug Logs. +
++
+You will see a new node for AD FS 2.0 Tracing.
+
+* Navigate to AD FS 2.0 Tracing, Right click Debug, and select Enable Log.
+
+* Start the ADFS Service and refresh the ADFS 2.0 Tracing Logs.
+
+
+=== Changes required to BOMI4
+
+[NOTE]
+====
+This is for WIF version 3.5 which the BOMI currently uses#**
+====
+
+The only change required in BOMI4 is in the `web.config` in the area of “microsoft.identityModel”.
+BOMI4 already uses the WIF so we just need to configure the WIF not to use the old STS but to use the ADFS server.
+The updated identity model section changes are below:
+
+image::_images/code2.png[alt=changes to bomi4, link="_images/code2.png"]
+
+In the above configuration the most important element are highlighted and a short description about these are below:
+
+* “**issuer**” +
++
+This is the URL to the ADFS server, this normally always ends with “/adfs/ls/”.
+This is the URL that the WIF will redirect the users browser to in order for ADFS to ask for login details.
+
+* “**realm**” +
++
+This is the url that ADFS will redirect your browser to if the user successfully logs in.
+
+* **“audienceUris**” +
++
+After your user successfully logs in they will be redirected to the url in the “realm”.
+If this url redirects or changes the browsers url then this audienceUris should match this final url.
+
+* “**trustedIssuers**” +
++
+This holds the trusted issuers thumbprint and name.
+Important, this [underline]#thumbprint# is got from the signed certificate in ADFS.
+The [underline]#name# is got from the “Claims Provider identifier” setup on the ADFS server under “Claims Provider Trusts”. +
++
+See earlier in the document where you were asked to keep a note of these details.
+
+=== Upgrading the BOMI to use WIF version 4.5
+
+Below is the web.config changes for WIF 4.5.
+This is slightly different in structure to what is there for WIF 3.5
+
+image::_images/code3.png[alt=changes to bomi4, link="_images/code3.png"]
+
+Specifically:
+
+* delete the reference to the old WIF dll below from `sdm.app`:
+
+[source,xml]
+----
+<Reference Include="Microsoft.IdentityModel, Version=3.5.0.0, Culture=neutral,
+PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+----
+
+* add a reference to the dotnet dll’s below:
+
+** `System.IdentityModel.dll`
+** `System.IdentityModel.services.dll`
+
+* install the nuget package below to the `sdm.app` project:
+
+[source,xml]
+----
+<package id="System.IdentityModel.Tokens.ValidatingIssuerNameRegistry" version="4.5.1" targetFramework="net452" />
+----
+
+After doing this you will notice that the app will not compile.
+To get it to compile below are some of the code changes I had to make.
+
+* Removed these `using` statements: +
++
+[source,csharp]
+----
+using Microsoft.IdentityModel.Claims;
+using Microsoft.IdentityModel.Protocols.WSFederation;
+using Microsoft.IdentityModel.Web;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.SessionSecurityToken;
+----
+
+* Replaced these with the `using` statements: +
++
+[source,csharp]
+----
+using System.IdentityModel.Protocols.WSFederation;
+using System.IdentityModel.Services;
+using System.IdentityModel
+using System.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.SessionSecurityToken
+----
+
+The collection of “Claim” objects is now an IEnumerable.
+
+As a result the code has to change as IEnumerable interface does not have a Count property or a FindAll method.
+So I had to include “System.Linq” to give me a “Count()” method.
+Then instead of using “FindAll” I used “Where” which is also part of “System.Linq” also.
+
+
+== How to turn on logging in the WIF
+
+Sometimes when debugging issues you find that the browser will not give you much information around errors.
+Also the event log might not show any information.
+I found Chrome to give you better error messages than Internet explorer sometimes but generally the information given was poor.
+In WIF 4.5 the logging is actually quite good and detailed.
+
+To turn on logging in WIF 4.5 do the following:
+
+* Create a folder called “c:\logs” and in the `web.config` add the below just below the closing `</configSections>` element: +
+
+[source,xml]
+----
+<system.diagnostics>
+  <sources>
+    <source name="System.IdentityModel" switchValue="Verbose">
+      <listeners>
+        <add name="xml" type="System.Diagnostics.XmlWriterTraceListener"
+                        initializeData="C:\logs\WIF.xml" />                 <!--1-->
+      </listeners>
+    </source>
+  </sources>
+  <trace autoflush="true" />
+</system.diagnostics>
+----
+<1> will output logs to the file “c:\logs\WIF.XML”
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

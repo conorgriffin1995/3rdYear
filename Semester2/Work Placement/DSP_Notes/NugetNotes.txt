@@ -1,0 +1,42 @@
+> Update-NugetRefs -Package nunit.framework -Version 2.4.7 -Framework net35 -AdditionalHintPathInfo lib\nunit -Git
+
+# Get a command from bomiArtifact
+> Get-Command -Module BomiArtifact
+
+# Command to remove a Nuget WorkInProgress
+> Remove-WIPFeedIfExists <branch name>
+
+# when searching for nuget package and its version
+> c:\nuget\nuget list -source $NugetWIP\<name of branch>
+
+# or 
+> c:\nuget\nuget list -allversions -source $NugetWIP\<name of branch>
+
+# list the nuget packages in progress
+> ls $NugetWIP
+
+# list specific nuget package in progress
+> ls $NugetWIP <branch name>
+
+# searching for package
+> c:\nuget\nuget list <repo name> 
+# for example : > c:\nuget\nuget list sdm.events
+
+#pushing a newly installed package to the server
+> c:\nuget\nuget.exe push mypackage.nupkpg -source $NugetServer 
+
+
+# for pushing a dll directly to server that has been downloaded from nuget.org
+- put into staging
+- send email to rem team
+
+# for pushing nuget package with dll to server
+1)create lib\net35\\<dll name> folder path
+
+2)create nuspec - &$NugetExe spec
+
+3) then create nuget package - &$NugetExe pack
+
+4) we will also need a git repo and have our own branches to work off.
+
+

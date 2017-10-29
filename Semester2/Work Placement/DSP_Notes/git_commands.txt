@@ -1,0 +1,26 @@
+git add . 
+must commit
+git status = gives status 
+git stash = to create a side store where it holds the changes but is not commited but can be retrieved
+git push = bring down the branch from the repo
+git stash pop = to bring back the stash commits
+git diff = to see the different changes 
+git diftool = download
+git clean -dfx = to whipe everything 
+git reset --hard HEAD = clean compltely
+git branch 
+git branchclip == 
+
+git push origin --delete <branch_name> = delete a branch
+
+#Build all in one command
+Build-AllInOne -Compile -Solution BuildCI -Verify –Packagetests
+
+#Copy contents
+copy-item c:\git\sdm\trunk\code\delivery\events c:\git\..\.. -Recurse
+
+#remove index.lock (use if git not working)
+rm .git/index.lock
+
+git remote add origin https://conorgriffin1995.visualstudio.com/_git/
+git push -u origin --all

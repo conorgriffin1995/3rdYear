@@ -1,0 +1,6 @@
+﻿  ListPhone.cpp
+c:\users\delluser\college\ads1\lab8\mockca\mockca\listphone.cpp(47): warning C4553: '==': operator has no effect; did you intend '='?
+c:\users\delluser\college\ads1\lab8\mockca\mockca\listphone.cpp(85): warning C4390: ';': empty controlled statement found; is this the intent?
+c:\users\delluser\college\ads1\lab8\mockca\mockca\listphone.cpp(92): warning C4715: 'ListPhone::getContact': not all control paths return a value
+  MockCA.vcxproj -> C:\Users\DellUser\College\ADS1\Lab8\MockCA\Debug\MockCA.exe
+  MockCA.vcxproj -> C:\Users\DellUser\College\ADS1\Lab8\MockCA\Debug\MockCA.pdb (Partial PDB)

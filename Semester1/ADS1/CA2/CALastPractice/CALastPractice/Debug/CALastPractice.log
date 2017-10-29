@@ -1,0 +1,5 @@
+﻿  BookList.cpp
+c:\users\delluser\college\calastpractice\calastpractice\booklist.cpp(83): warning C4553: '==': operator has no effect; did you intend '='?
+c:\users\delluser\college\calastpractice\calastpractice\booklist.cpp(53): warning C4715: 'BookList::getName': not all control paths return a value
+  CALastPractice.vcxproj -> C:\Users\DellUser\College\CALastPractice\Debug\CALastPractice.exe
+  CALastPractice.vcxproj -> C:\Users\DellUser\College\CALastPractice\Debug\CALastPractice.pdb (Partial PDB)

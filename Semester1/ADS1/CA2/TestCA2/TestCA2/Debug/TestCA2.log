@@ -1,0 +1,8 @@
+﻿  Source.cpp
+  Node.cpp
+  ListBook.cpp
+c:\users\delluser\college\ads1\testca2\testca2\listbook.cpp(62): warning C4553: '==': operator has no effect; did you intend '='?
+  Generating Code...
+c:\users\delluser\college\ads1\testca2\testca2\listbook.cpp(57): warning C4715: 'ListBook::getBook': not all control paths return a value
+  TestCA2.vcxproj -> C:\Users\DellUser\College\ADS1\TestCA2\Debug\TestCA2.exe
+  TestCA2.vcxproj -> C:\Users\DellUser\College\ADS1\TestCA2\Debug\TestCA2.pdb (Partial PDB)

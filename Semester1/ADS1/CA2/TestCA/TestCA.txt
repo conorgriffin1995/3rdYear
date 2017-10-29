@@ -1,0 +1,18 @@
+Book Class/Struct
+name price
+
+Node Class
+default constructor
+
+List Class
+default con
+insert
+deleteMostRecent
+display
+getMethod..get book by name or price
+
+//The Big Three
+copy constr
+overloaded assignment
+destructor
+

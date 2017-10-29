@@ -1,0 +1,32 @@
+# When changing scripts (Build)
+# After saving edits in notepad++
+# PowerShell must be either re-opened
+# Or remove modeules
+	remove-module
+# And re-import modules
+	Import-Module BomiArtifact
+
+# The you can Build Nuget Solution
+	Build-NugetSolution -Package
+
+#BuildAllInOne
+Build-AllInOne -Compile -Solution BuildCI -Verify –Packagetests
+
+#BuildAllOne with no warnings and setting the branch
+Build-AllInOne -Compile -Solution BuildCI -Verify -PackageTests -NoWarnings -Branch $env:GIT_BRANCH
+
+
+#Build Back End
+PS C:\git\INTEG_MIRROR\Trunk\Code> Build-AllInOne -Compile -Solution wssbackend,wssfrontendshared,wssfrontend,welfarepar
+tners -NoWarnings
+
+# -NoWarnings : Doesnt show yellow warnings in Build
+
+
+# Must Set branch each time preparing/building/publishing Nuget package
+ run >SET-CURRENTBRANCH
+ then check >$env:GIT_BRANCH
+
+
+# Azure Tools Windows Explorer Path
+\\cskma0242\Tools\Azure\Azure SDK 2.7

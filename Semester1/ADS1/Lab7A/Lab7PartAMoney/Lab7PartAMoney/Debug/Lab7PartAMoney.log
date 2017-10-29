@@ -1,0 +1,26 @@
+﻿  Source.cpp
+c:\users\delluser\college\ads1\lab7a\lab7partamoney\lab7partamoney\source.cpp(12): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'Money'
+c:\users\delluser\college\ads1\lab7a\lab7partamoney\lab7partamoney\source.cpp(12): warning C4473: 'printf' : not enough arguments passed for format string
+  c:\users\delluser\college\ads1\lab7a\lab7partamoney\lab7partamoney\source.cpp(12): note: placeholders and their parameters expect 2 variadic arguments, but 1 were provided
+  c:\users\delluser\college\ads1\lab7a\lab7partamoney\lab7partamoney\source.cpp(12): note: the missing variadic argument 2 is required by format string '%d'
+c:\users\delluser\college\ads1\lab7a\lab7partamoney\lab7partamoney\source.cpp(17): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'Money'
+c:\users\delluser\college\ads1\lab7a\lab7partamoney\lab7partamoney\source.cpp(17): warning C4473: 'printf' : not enough arguments passed for format string
+  c:\users\delluser\college\ads1\lab7a\lab7partamoney\lab7partamoney\source.cpp(17): note: placeholders and their parameters expect 2 variadic arguments, but 1 were provided
+  c:\users\delluser\college\ads1\lab7a\lab7partamoney\lab7partamoney\source.cpp(17): note: the missing variadic argument 2 is required by format string '%d'
+c:\users\delluser\college\ads1\lab7a\lab7partamoney\lab7partamoney\source.cpp(22): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'Money'
+c:\users\delluser\college\ads1\lab7a\lab7partamoney\lab7partamoney\source.cpp(22): warning C4473: 'printf' : not enough arguments passed for format string
+  c:\users\delluser\college\ads1\lab7a\lab7partamoney\lab7partamoney\source.cpp(22): note: placeholders and their parameters expect 2 variadic arguments, but 1 were provided
+  c:\users\delluser\college\ads1\lab7a\lab7partamoney\lab7partamoney\source.cpp(22): note: the missing variadic argument 2 is required by format string '%d'
+c:\users\delluser\college\ads1\lab7a\lab7partamoney\lab7partamoney\source.cpp(27): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'Money'
+c:\users\delluser\college\ads1\lab7a\lab7partamoney\lab7partamoney\source.cpp(27): warning C4473: 'printf' : not enough arguments passed for format string
+  c:\users\delluser\college\ads1\lab7a\lab7partamoney\lab7partamoney\source.cpp(27): note: placeholders and their parameters expect 2 variadic arguments, but 1 were provided
+  c:\users\delluser\college\ads1\lab7a\lab7partamoney\lab7partamoney\source.cpp(27): note: the missing variadic argument 2 is required by format string '%d'
+c:\users\delluser\college\ads1\lab7a\lab7partamoney\lab7partamoney\source.cpp(32): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'Money'
+c:\users\delluser\college\ads1\lab7a\lab7partamoney\lab7partamoney\source.cpp(32): warning C4473: 'printf' : not enough arguments passed for format string
+  c:\users\delluser\college\ads1\lab7a\lab7partamoney\lab7partamoney\source.cpp(32): note: placeholders and their parameters expect 2 variadic arguments, but 1 were provided
+  c:\users\delluser\college\ads1\lab7a\lab7partamoney\lab7partamoney\source.cpp(32): note: the missing variadic argument 2 is required by format string '%d'
+  Money.cpp
+c:\users\delluser\college\ads1\lab7a\lab7partamoney\lab7partamoney\money.cpp(34): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+  Generating Code...
+  Lab7PartAMoney.vcxproj -> C:\Users\DellUser\College\ADS1\Lab7A\Lab7PartAMoney\Debug\Lab7PartAMoney.exe
+  Lab7PartAMoney.vcxproj -> C:\Users\DellUser\College\ADS1\Lab7A\Lab7PartAMoney\Debug\Lab7PartAMoney.pdb (Partial PDB)
